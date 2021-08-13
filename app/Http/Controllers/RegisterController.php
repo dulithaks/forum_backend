@@ -21,6 +21,7 @@ class RegisterController extends Controller
     {
         try {
             $data = $request->validated();
+            $data['password'] = bcrypt($data['password']);
 
             $user = User::create($data);
             $user->generateToken();

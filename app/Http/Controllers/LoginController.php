@@ -2,24 +2,33 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Auth\Authenticatable;
-use Illuminate\Http\Request;
+use App\Http\Requests\UserLoginRequest;
+use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
-
-    public function login(Request $request)
+    /**
+     * Login
+     *
+     * @param UserLoginRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function login(UserLoginRequest $request)
     {
-        $this->validate($request, [
-            'email'           => 'required|max:255|email',
-            'password'           => 'required|confirmed',
-        ]);
-        if (Auth::attempt(['email' => $email, 'password' => $password])) {
-            // Success
-            return redirect()->intended('/panel');
+        $data = $request->validated();
+
+        if (Auth::attempt($data)) {
+            $user = auth()->user();
+            $user->generateToken();
+
+            return response()->json([
+                'data' => $user->toArray(),
+            ]);
         } else {
-            // Go back on error (or do what you want)
-            return redirect()->back();
+            return response()->json([
+                'message' => 'The provided credentials do not match our records.',
+                'data' => null,
+            ], 422);
         }
     }
 }
