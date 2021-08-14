@@ -25,13 +25,9 @@ class RegisterController extends Controller
             $data['password'] = bcrypt($data['password']);
 
             $user = User::create($data);
-            $token = $user->createToken('auth_token')->plainTextToken;
-            $data = array_merge($user->toArray(), [
-                'access_token' => $token,
-                'token_type' => 'Bearer'
-            ]);
+            $user->generateToken();
 
-            return response()->json(['data' => $data], 201);
+            return response()->json(['data' => $user], 201);
         } catch (ValidationException $e) {
             dd($e);
             // TODO Handle validation error messages
