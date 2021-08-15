@@ -13,7 +13,9 @@ class Post extends Model
     const STATUS_PENDING = 0;
 
     protected $fillable = [
+        'user_id',
         'body',
+        'status',
     ];
 
     protected $hidden = [

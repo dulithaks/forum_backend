@@ -26,6 +26,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::middleware(['auth:api'])->group(function () {
     Route::get('posts', [PostsController::class, 'index']);
+    Route::post('posts', [PostsController::class, 'store']);
     Route::get('posts/{post}/comments', [CommentsController::class, 'index']);
-    Route::post('posts/{post}/comments/create', [CommentsController::class, 'store']);
+    Route::post('posts/{post}/comments', [CommentsController::class, 'store']);
 });

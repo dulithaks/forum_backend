@@ -19,11 +19,12 @@ class CommentsController extends Controller
     {
         try {
             return Comment::with('user')
-                ->where('post_id_', $post->id)
+                ->where('post_id', $post->id)
                 ->latest()
                 ->paginate($request->input('take', 3));
         }
         catch(Exception $e) {
+            exception_logger($e, $request->all());
             return response()->json(['message' => __('message.something_went_wrong')], 500);
         }
     }

@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PostCreateRequest;
+use App\Models\Comment;
 use App\Models\Post;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class PostsController extends Controller
@@ -15,7 +18,8 @@ class PostsController extends Controller
     public function index(Request $request)
     {
         $term = $request->input('term', null);
-        $posts = Post::approve()->with('user');
+
+        $posts = Post::approve()->with('user')->latest();
 
         if ($term) {
             $posts = $posts->where(function ($q) use ($term) {
@@ -43,12 +47,22 @@ class PostsController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param PostCreateRequest $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(PostCreateRequest $request)
     {
-        //
+        try {
+            $data = $request->validated();
+            $data['user_id'] = request()->user()->id;
+            $data['status'] = request()->user()->role == User::ROLE_ADMIN ? 1 : 0;
+
+            $post =  Post::create($data);
+            return response()->json(['data' => $post]);
+        }
+        catch (Exception $e) {
+            return response()->json(['message' => __('message.something_went_wrong')], 500);
+        }
     }
 
     /**
