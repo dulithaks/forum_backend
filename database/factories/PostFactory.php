@@ -25,7 +25,8 @@ class PostFactory extends Factory
     {
         return [
             'user_id' => User::inRandomOrder()->get()->first()->id,
-            'question' => $this->faker->sentence,
+            'body' => $this->faker->sentence,
+            'status' => Post::STATUS_APPROVE,
         ];
     }
 }

@@ -49,11 +49,26 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    protected $appends = [
+        'full_name',
+        'avatar',
+    ];
+
     public function generateToken()
     {
         $this->api_token = Str::random(60);
         $this->save();
 
         return $this->api_token;
+    }
+
+    public function getFullNameAttribute()
+    {
+        return $this->first_name . ' ' . $this->last_name;
+    }
+
+    public function getAvatarAttribute()
+    {
+        return \Avatar::create($this->full_name)->toBase64();
     }
 }

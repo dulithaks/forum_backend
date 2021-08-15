@@ -12,11 +12,19 @@ class Post extends Model
     const STATUS_APPROVE = 1;
     const STATUS_PENDING = 0;
 
+    protected $fillable = [
+        'body',
+    ];
+
     protected $hidden = [
         'status',
         'created_at',
         'updated_at',
         'deleted_at',
+    ];
+
+    protected $appends = [
+      'human_date'
     ];
 
     public function scopeApprove($query)
@@ -26,5 +34,10 @@ class Post extends Model
 
     public function user() {
         return $this->belongsTo(User::class)->select(['id', 'first_name', 'last_name', 'role']);
+    }
+
+    public function getHumanDateAttribute()
+    {
+        return $this->created_at->diffForHumans();
     }
 }
