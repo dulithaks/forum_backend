@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CommentCreateRequest;
 use App\Models\Comment;
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Exception;
 
 class CommentsController extends Controller
 {
@@ -13,9 +15,17 @@ class CommentsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index($post)
+    public function index(Request $request, Post $post)
     {
-        return Comment::with('user')->latest()->paginate(10);
+        try {
+            return Comment::with('user')
+                ->where('post_id_', $post->id)
+                ->latest()
+                ->paginate($request->input('take', 3));
+        }
+        catch(Exception $e) {
+            return response()->json(['message' => __('message.something_went_wrong')], 500);
+        }
     }
 
     /**
@@ -34,9 +44,18 @@ class CommentsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CommentCreateRequest $request)
     {
-        //
+        try {
+            $data = $request->validated();
+            $data['user_id'] = request()->user()->id;
+
+            $comment =  Comment::create($data);
+            return response()->json(['data' => $comment]);
+        }
+        catch (Exception $e) {
+            return response()->json(['message' => __('message.something_went_wrong')], 500);
+        }
     }
 
     /**

@@ -49,6 +49,6 @@ class Post extends Model
 
     public function getLatestCommentsAttribute()
     {
-        return $this->comments()->with('user')->latest()->paginate(10);
+        return $this->comments()->with('user')->latest()->paginate(3);
     }
 }

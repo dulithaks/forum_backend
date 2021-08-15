@@ -28,12 +28,8 @@ class RegisterController extends Controller
             $user->generateToken();
 
             return response()->json(['data' => $user], 201);
-        } catch (ValidationException $e) {
-            dd($e);
-            // TODO Handle validation error messages
         } catch (Exception $e) {
-            dd($e);
-            // TODO unknown exception
+            return response()->json(['message' => __('message.something_went_wrong')], 500);
         }
     }
 }

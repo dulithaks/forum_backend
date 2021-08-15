@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\CommentsController;
+use App\Http\Controllers\PostsController;
 use App\Http\Controllers\RegisterController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -23,5 +25,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::middleware(['auth:api'])->group(function () {
-    Route::get('posts', [\App\Http\Controllers\PostsController::class, 'index']);
+    Route::get('posts', [PostsController::class, 'index']);
+    Route::get('posts/{post}/comments', [CommentsController::class, 'index']);
+    Route::post('posts/{post}/comments/create', [CommentsController::class, 'store']);
 });
