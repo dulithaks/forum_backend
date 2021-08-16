@@ -13,6 +13,8 @@ class Post extends Model
     const STATUS_APPROVE = 1;
     const STATUS_REJECT = 2;
 
+    const FILTER_PENDING_POSTS = 'pending-posts';
+
     protected $fillable = [
         'user_id',
         'body',
@@ -33,6 +35,11 @@ class Post extends Model
     public function scopeApprove($query)
     {
         return $query->where('status', self::STATUS_APPROVE);
+    }
+
+    public function scopePending($query)
+    {
+        return $query->where('status', self::STATUS_PENDING);
     }
 
     public function scopeApproveAndPending($query)

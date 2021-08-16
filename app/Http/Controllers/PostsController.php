@@ -21,10 +21,18 @@ class PostsController extends Controller
     {
         $term = $request->input('term', null);
         $userId = $request->input('userId', null);
+        $filter = $request->input('filter', null);
 
         $posts = Post::with('user')->latest();
 
         $posts = request()->user()->role === User::ROLE_ADMIN ? $posts->approveAndPending() : $posts->approve();
+
+        if($filter == Post::FILTER_PENDING_POSTS && request()->user()->role === User::ROLE_ADMIN) {
+            $posts = $posts->pending();
+        }
+        else {
+            $posts = $posts->approve();
+        }
 
         $posts = $userId ? $posts->where('user_id', $userId) : $posts;
 
