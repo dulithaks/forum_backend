@@ -9,8 +9,9 @@ class Post extends Model
 {
     use HasFactory;
 
-    const STATUS_APPROVE = 1;
     const STATUS_PENDING = 0;
+    const STATUS_APPROVE = 1;
+    const STATUS_REJECT = 2;
 
     protected $fillable = [
         'user_id',

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\PostApproveRequest;
 use App\Http\Requests\PostCreateRequest;
+use App\Http\Requests\PostRejectRequest;
 use App\Models\Comment;
 use App\Models\Post;
 use App\Models\User;
@@ -73,7 +74,7 @@ class PostsController extends Controller
     }
 
     /**
-     * Approve a post
+     * Approve post
      *
      * @param PostApproveRequest $request
      * @param Post $post
@@ -82,6 +83,19 @@ class PostsController extends Controller
     public function approve(PostApproveRequest $request, Post $post)
     {
         $post->update(['status' => Post::STATUS_APPROVE]);
+        return response()->json(['data' => $post]);
+    }
+
+    /**
+     * Reject post
+     *
+     * @param PostRejectRequest $request
+     * @param Post $post
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function reject(PostRejectRequest $request, Post $post)
+    {
+        $post->update(['status' => Post::STATUS_REJECT]);
         return response()->json(['data' => $post]);
     }
 
