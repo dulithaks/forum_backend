@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\PostApproveRequest;
 use App\Http\Requests\PostCreateRequest;
+use App\Http\Requests\PostDeleteRequest;
 use App\Http\Requests\PostRejectRequest;
 use App\Models\Comment;
 use App\Models\Post;
@@ -27,10 +28,9 @@ class PostsController extends Controller
 
         $posts = request()->user()->role === User::ROLE_ADMIN ? $posts->approveAndPending() : $posts->approve();
 
-        if($filter == Post::FILTER_PENDING_POSTS && request()->user()->role === User::ROLE_ADMIN) {
+        if ($filter == Post::FILTER_PENDING_POSTS && request()->user()->role === User::ROLE_ADMIN) {
             $posts = $posts->pending();
-        }
-        else {
+        } else {
             $posts = $posts->approve();
         }
 
@@ -72,10 +72,9 @@ class PostsController extends Controller
             $data['user_id'] = request()->user()->id;
             $data['status'] = request()->user()->role == User::ROLE_ADMIN ? 1 : 0;
 
-            $post =  Post::create($data);
+            $post = Post::create($data);
             return response()->json(['data' => $post]);
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             return response()->json(['message' => __('message.something_went_wrong')], 500);
         }
     }
@@ -132,11 +131,20 @@ class PostsController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
-     * @return \Illuminate\Http\Response
+     * @param PostDeleteRequest $request
+     * @param Post $post
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy($id)
+    public function destroy(PostDeleteRequest $request, Post $post)
     {
-        //
+        try {
+            return response()->json([
+                'message' => 'Successfully deleted.',
+                'status' => $post->delete(),
+            ]);
+        } catch (Exception $e) {
+            exception_logger($e);
+            return response()->json(['message' => __('message.something_went_wrong')], 500);
+        }
     }
 }

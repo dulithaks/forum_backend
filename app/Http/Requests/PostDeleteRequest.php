@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 
-class PostApproveRequest extends FormRequest
+class PostDeleteRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -15,7 +15,8 @@ class PostApproveRequest extends FormRequest
     public function authorize()
     {
         $user = request()->user();
-        return $user->role == User::ROLE_ADMIN;
+        $post = $this->route('post');
+        return $user->id == $post->user_id || $user->role == User::ROLE_ADMIN;
     }
 
     /**

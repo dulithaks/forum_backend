@@ -26,6 +26,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('posts', [PostsController::class, 'store']);
     Route::put('posts/{post}/approve', [PostsController::class, 'approve']);
     Route::put('posts/{post}/reject', [PostsController::class, 'reject']);
+    Route::delete('posts/{post}', [PostsController::class, 'destroy']);
 
     Route::get('posts/{post}/comments', [CommentsController::class, 'index']);
     Route::post('posts/{post}/comments', [CommentsController::class, 'store']);
