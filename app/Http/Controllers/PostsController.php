@@ -20,14 +20,13 @@ class PostsController extends Controller
     public function index(Request $request)
     {
         $term = $request->input('term', null);
+        $userId = $request->input('userId', null);
+
         $posts = Post::with('user')->latest();
 
-        if (request()->user()->role === User::ROLE_ADMIN) {
-            $posts = $posts->approveAndPending();
-        }
-        else {
-            $posts = $posts->approve();
-        }
+        $posts = request()->user()->role === User::ROLE_ADMIN ? $posts->approveAndPending() : $posts->approve();
+
+        $posts = $userId ? $posts->where('user_id', $userId) : $posts;
 
         if ($term) {
             $posts = $posts->where(function ($q) use ($term) {
