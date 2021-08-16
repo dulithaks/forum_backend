@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
@@ -14,9 +15,19 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         \App\Models\User::factory(1)->create([
-            'email' => 'Loraine.Jenkins@example.net',
-            'password' => bcrypt('12345678!'),
-            'api_token' => 'ibpXhiGg2OSlt0K086OaHsyQ9nZ4gSUimc3VZB820BaXh4zN2fTvsTWFFUJ9',
+            'id' => 1,
+            'email' => 'admin@example.net',
+            'role' => 'admin',
+            'password' => bcrypt('12345678'),
+            'api_token' => Str::random(20),
+        ]);
+
+        \App\Models\User::factory(1)->create([
+            'id' => 2,
+            'email' => 'user@example.net',
+            'role' => 'user',
+            'password' => bcrypt('12345678'),
+            'api_token' => Str::random(20),
         ]);
 
         \App\Models\User::factory(10)->create();

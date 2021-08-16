@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="RegisterTest.user_registration_fail" type="PHPUnitRunConfigurationType" factoryName="PHPUnit">
+    <CommandLine>
+      <PhpTestInterpreterSettings>
+        <option name="interpreterName" value="PHP 7.4" />
+      </PhpTestInterpreterSettings>
+    </CommandLine>
+    <TestRunner class="Tests\Feature\RegisterTest" configuration_file="$PROJECT_DIR$/phpunit.xml" file="$PROJECT_DIR$/tests/Feature/RegisterControllerTest.php" method="user_registration_fail" scope="Method" />
+    <method v="2" />
+  </configuration>
+</component>
