@@ -16,18 +16,23 @@ class LoginController extends Controller
      */
     public function login(UserLoginRequest $request)
     {
-        $data = $request->validated();
+        try {
+            $data = $request->validated();
 
-        if (Auth::attempt($data)) {
-            $user = auth()->user();
-            $user->generateToken();
+            if (Auth::attempt($data)) {
+                $user = auth()->user();
+                $user->generateToken();
 
-            return response()->json(['data' => $user]);
-        } else {
-            return response()->json([
-                'message' => 'The provided credentials do not match our records.',
-                'data' => null,
-            ], 422);
+                return response()->json(['data' => $user]);
+            } else {
+                return response()->json([
+                    'message' => 'The provided credentials do not match our records.',
+                    'data' => null,
+                ], 422);
+            }
+        } catch (Exception $e) {
+            exception_logger($e);
+            return response()->json(['message' => __('message.something_went_wrong')], 500);
         }
     }
 }

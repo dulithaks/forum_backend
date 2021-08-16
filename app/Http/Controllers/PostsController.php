@@ -20,43 +20,38 @@ class PostsController extends Controller
      */
     public function index(Request $request)
     {
-        $term = $request->input('term', null);
-        $userId = $request->input('userId', null);
-        $filter = $request->input('filter', null);
+        try {
+            $term = $request->input('term', null);
+            $userId = $request->input('userId', null);
+            $filter = $request->input('filter', null);
 
-        $posts = Post::with('user')->latest();
+            $posts = Post::with('user')->latest();
 
-        $posts = request()->user()->role === User::ROLE_ADMIN ? $posts->approveAndPending() : $posts->approve();
+            $posts = request()->user()->role === User::ROLE_ADMIN ? $posts->approveAndPending() : $posts->approve();
 
-        if ($filter == Post::FILTER_PENDING_POSTS && request()->user()->role === User::ROLE_ADMIN) {
-            $posts = $posts->pending();
-        } else {
-            $posts = $posts->approve();
+            if ($filter == Post::FILTER_PENDING_POSTS && request()->user()->role === User::ROLE_ADMIN) {
+                $posts = $posts->pending();
+            } else {
+                $posts = $posts->approve();
+            }
+
+            $posts = $userId ? $posts->where('user_id', $userId) : $posts;
+
+            if ($term) {
+                $posts = $posts->where(function ($q) use ($term) {
+                    $q->where('body', 'like', "%{$term}%")
+                        ->orWhereHas('user', function ($q) use ($term) {
+                            $q->where('first_name', 'like', "%{$term}%")
+                                ->orWhere('last_name', 'like', "%{$term}%");
+                        });
+                });
+            }
+
+            return $posts->paginate(10);
+        } catch (Exception $e) {
+            exception_logger($e);
+            return response()->json(['message' => __('message.something_went_wrong')], 500);
         }
-
-        $posts = $userId ? $posts->where('user_id', $userId) : $posts;
-
-        if ($term) {
-            $posts = $posts->where(function ($q) use ($term) {
-                $q->where('body', 'like', "%{$term}%")
-                    ->orWhereHas('user', function ($q) use ($term) {
-                        $q->where('first_name', 'like', "%{$term}%")
-                            ->orWhere('last_name', 'like', "%{$term}%");
-                    });
-            });
-        }
-
-        return $posts->paginate(10);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -88,8 +83,13 @@ class PostsController extends Controller
      */
     public function approve(PostApproveRequest $request, Post $post)
     {
-        $post->update(['status' => Post::STATUS_APPROVE]);
-        return response()->json(['data' => $post]);
+        try {
+            $post->update(['status' => Post::STATUS_APPROVE]);
+            return response()->json(['data' => $post]);
+        } catch (Exception $e) {
+            exception_logger($e);
+            return response()->json(['message' => __('message.something_went_wrong')], 500);
+        }
     }
 
     /**
@@ -101,31 +101,13 @@ class PostsController extends Controller
      */
     public function reject(PostRejectRequest $request, Post $post)
     {
-        $post->update(['status' => Post::STATUS_REJECT]);
-        return response()->json(['data' => $post]);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
+        try {
+            $post->update(['status' => Post::STATUS_REJECT]);
+            return response()->json(['data' => $post]);
+        } catch (Exception $e) {
+            exception_logger($e);
+            return response()->json(['message' => __('message.something_went_wrong')], 500);
+        }
     }
 
     /**
