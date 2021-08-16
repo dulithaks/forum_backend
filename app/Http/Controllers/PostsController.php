@@ -47,7 +47,7 @@ class PostsController extends Controller
                 });
             }
 
-            return $posts->paginate(10);
+            return response()->json(['data' => $posts->paginate(10)]);
         } catch (Exception $e) {
             exception_logger($e);
             return response()->json(['message' => __('message.something_went_wrong')], 500);
