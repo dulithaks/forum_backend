@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PostApproveRequest;
 use App\Http\Requests\PostCreateRequest;
 use App\Models\Comment;
 use App\Models\Post;
@@ -18,8 +19,14 @@ class PostsController extends Controller
     public function index(Request $request)
     {
         $term = $request->input('term', null);
+        $posts = Post::with('user')->latest();
 
-        $posts = Post::approve()->with('user')->latest();
+        if (request()->user()->role === User::ROLE_ADMIN) {
+            $posts = $posts->approveAndPending();
+        }
+        else {
+            $posts = $posts->approve();
+        }
 
         if ($term) {
             $posts = $posts->where(function ($q) use ($term) {
@@ -48,7 +55,7 @@ class PostsController extends Controller
      * Store a newly created resource in storage.
      *
      * @param PostCreateRequest $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(PostCreateRequest $request)
     {
@@ -66,14 +73,16 @@ class PostsController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Approve a post
      *
-     * @param int $id
-     * @return \Illuminate\Http\Response
+     * @param PostApproveRequest $request
+     * @param Post $post
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function show($id)
+    public function approve(PostApproveRequest $request, Post $post)
     {
-        //
+        $post->update(['status' => Post::STATUS_APPROVE]);
+        return response()->json(['data' => $post]);
     }
 
     /**

@@ -24,6 +24,8 @@ Route::post('register', [RegisterController::class, 'register']);
 Route::middleware(['auth:api'])->group(function () {
     Route::get('posts', [PostsController::class, 'index']);
     Route::post('posts', [PostsController::class, 'store']);
+    Route::put('posts/{post}/approve', [PostsController::class, 'approve']);
+
     Route::get('posts/{post}/comments', [CommentsController::class, 'index']);
     Route::post('posts/{post}/comments', [CommentsController::class, 'store']);
 });
